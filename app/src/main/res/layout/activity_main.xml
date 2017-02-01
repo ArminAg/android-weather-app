@@ -5,10 +5,6 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     tools:context="solutions.hedron.android_weather_app.MainActivity"
     android:background="#499EEC">
@@ -17,7 +13,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp">
 
         <ImageView
             android:layout_height="50dp"
@@ -37,8 +35,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="25dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:paddingLeft="26dp"
+        android:paddingRight="26dp"
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:text="Today, Jan 28"
