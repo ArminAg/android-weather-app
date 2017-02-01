@@ -10,12 +10,12 @@ import java.util.Date;
 
 public class DailyWeatherReport {
 
-    public static final String WEATHER_TYPE_CLOUDS = "Cloudy";
+    public static final String WEATHER_TYPE_CLOUDS = "Clouds";
     public static final String WEATHER_TYPE_PARTIAL_CLOUDS = "Partially Cloudy";
-    public static final String WEATHER_TYPE_SUN = "Sunny";
-    public static final String WEATHER_TYPE_RAIN = "Rainy";
+    public static final String WEATHER_TYPE_SUN = "Clear";
+    public static final String WEATHER_TYPE_RAIN = "Rain";
     public static final String WEATHER_TYPE_SNOW = "Snow";
-    public static final String WEATHER_TYPE_THUNDER = "Thunder";
+    public static final String WEATHER_TYPE_THUNDER = "Thunderstorm";
 
     private String cityName;
     private String country;
@@ -23,7 +23,7 @@ public class DailyWeatherReport {
     private int maxTemp;
     private int minTemp;
     private String formattedDate;
-    private String weather;
+    private String weatherType;
 
 
     public String getCityName() {
@@ -51,17 +51,17 @@ public class DailyWeatherReport {
     }
 
     public String getWeather() {
-        return weather;
+        return weatherType;
     }
 
-    public DailyWeatherReport(String cityName, String country, int currentTemp, int maxTemp, int minTemp, String rawDate, String weather) {
+    public DailyWeatherReport(String cityName, String country, int currentTemp, int maxTemp, int minTemp, String rawDate, String weatherType) {
         this.cityName = cityName;
         this.country = country;
         this.currentTemp = currentTemp;
         this.maxTemp = maxTemp;
         this.minTemp = minTemp;
         this.formattedDate = formatRawDate(rawDate);
-        this.weather = weather;
+        this.weatherType = weatherType;
     }
 
     private String formatRawDate(String rawDate){
