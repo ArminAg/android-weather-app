@@ -1,5 +1,9 @@
 package solutions.hedron.android_weather_app.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by armin on 31/01/2017.
  */
@@ -61,6 +65,15 @@ public class DailyWeatherReport {
     }
 
     private String formatRawDate(String rawDate){
-        return "May 1";
+        SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String result = "";
+        try {
+            Date date = sourceFormat.parse(rawDate);
+            SimpleDateFormat destinationFormat = new SimpleDateFormat("EEE, MMM d");
+            result = destinationFormat.format(date);
+        } catch (ParseException ex) {
+
+        }
+        return result;
     }
 }

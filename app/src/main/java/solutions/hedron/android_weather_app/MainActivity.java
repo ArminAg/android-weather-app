@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void updateUI(){
         if (weatherReportList.size() > 0 ){
             DailyWeatherReport report = weatherReportList.get(0);
-            todayDate.setText("Today, Jan 1");
+            todayDate.setText(report.getFormattedDate());
             currentTemp.setText(Integer.toString(report.getCurrentTemp()) + "°");
             lowTemp.setText(Integer.toString(report.getMinTemp()) + "°");
             cityCountry.setText(report.getCityName() + ", " + report.getCountry());
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                                 String rawDate = obj.getString("dt_txt");
 
-                                DailyWeatherReport report = new DailyWeatherReport(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), weatherType, rawDate);
+                                DailyWeatherReport report = new DailyWeatherReport(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
                                 weatherReportList.add(report);
                             }
                         } catch (JSONException exception){
