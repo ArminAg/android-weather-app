@@ -104,20 +104,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lowTemp.setText(Integer.toString(report.getMinTemp()) + "°");
             cityCountry.setText(report.getCityName() + ", " + report.getCountry());
             weatherDescription.setText(report.getWeather());
-
+            Log.v("WEATHER_TYPE", report.getWeather());
             switch (report.getWeather()){
                 case DailyWeatherReport.WEATHER_TYPE_SUN:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.sunny));
+                    break;
                 case DailyWeatherReport.WEATHER_TYPE_CLOUDS:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.cloudy));
+                    break;
                 case DailyWeatherReport.WEATHER_TYPE_PARTIAL_CLOUDS:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.partially_cloudy));
+                    break;
                 case DailyWeatherReport.WEATHER_TYPE_RAIN:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.rainy));
+                    break;
                 case DailyWeatherReport.WEATHER_TYPE_SNOW:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.snow));
+                    break;
                 case DailyWeatherReport.WEATHER_TYPE_THUNDER:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.thunder_lightning));
+                    break;
             }
         }
     }

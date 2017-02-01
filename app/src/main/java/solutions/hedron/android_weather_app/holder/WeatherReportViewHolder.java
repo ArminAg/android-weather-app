@@ -34,22 +34,28 @@ public class WeatherReportViewHolder extends RecyclerView.ViewHolder {
     public void updateUI(DailyWeatherReport report){
         this.cardWeatherDay.setText(report.getFormattedDate());
         this.cardWeatherDescription.setText(report.getWeather());
-        this.cardTempHigh.setText(Integer.toString(report.getMaxTemp()));
-        this.cardTempLow.setText(Integer.toString(report.getMinTemp()));
+        this.cardTempHigh.setText(Integer.toString(report.getMaxTemp()) + "°");
+        this.cardTempLow.setText(Integer.toString(report.getMinTemp()) + "°");
 
         switch (report.getWeather()){
             case DailyWeatherReport.WEATHER_TYPE_SUN:
                 this.cardWeatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.sunny_mini));
+                break;
             case DailyWeatherReport.WEATHER_TYPE_CLOUDS:
                 this.cardWeatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.cloudy_mini));
+                break;
             case DailyWeatherReport.WEATHER_TYPE_PARTIAL_CLOUDS:
                 this.cardWeatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.partially_cloudy));
+                break;
             case DailyWeatherReport.WEATHER_TYPE_RAIN:
                 this.cardWeatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.rainy_mini));
+                break;
             case DailyWeatherReport.WEATHER_TYPE_SNOW:
                 this.cardWeatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.snow_mini));
+                break;
             case DailyWeatherReport.WEATHER_TYPE_THUNDER:
                 this.cardWeatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.thunder_lightning_mini));
+                break;
         }
     }
 }
