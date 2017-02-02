@@ -35,8 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="25dp"
-        android:paddingLeft="26dp"
-        android:paddingRight="26dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="10dp"
         android:layout_marginBottom="10dp">
 
         <TextView
@@ -69,14 +69,15 @@
                 android:id="@+id/lowTemp"
                 android:layout_weight="1"
                 android:textColor="@android:color/white"
-                android:textSize="30sp" />
+                android:textSize="26sp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/sunny"
                 android:id="@+id/weatherIcon"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:paddingBottom="15dp" />
 
         </LinearLayout>
 
@@ -106,10 +107,18 @@
         </LinearLayout>
 
     </LinearLayout>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/content_daily_weather"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-    </android.support.v7.widget.RecyclerView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/content_daily_weather"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+        </android.support.v7.widget.RecyclerView>
+    </RelativeLayout>
+
 </LinearLayout>
