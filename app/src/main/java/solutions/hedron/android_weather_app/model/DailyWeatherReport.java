@@ -1,5 +1,9 @@
 package solutions.hedron.android_weather_app.model;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,15 +56,8 @@ public class DailyWeatherReport {
     }
 
     protected String formatRawDate(String rawDate){
-        SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String result = "";
-        try {
-            Date date = sourceFormat.parse(rawDate);
-            SimpleDateFormat destinationFormat = new SimpleDateFormat("EEE, MMM d");
-            result = destinationFormat.format(date);
-        } catch (ParseException ex) {
-
-        }
-        return result;
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        DateTime formattedDate = fmt.parseDateTime(rawDate);
+        return formattedDate.dayOfWeek().getAsText() + ", " + formattedDate.monthOfYear().getAsShortText() + " " + formattedDate.dayOfMonth().get();
     }
 }
