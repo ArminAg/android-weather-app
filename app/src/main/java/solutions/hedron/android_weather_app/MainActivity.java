@@ -27,11 +27,17 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import solutions.hedron.android_weather_app.adapter.WeatherReportAdapter;
 import solutions.hedron.android_weather_app.model.DailyWeatherReport;
@@ -104,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lowTemp.setText(Integer.toString(report.getMinTemp()) + "°");
             cityCountry.setText(report.getCityName() + ", " + report.getCountry());
             weatherDescription.setText(report.getWeather());
-            Log.v("WEATHER_TYPE", report.getWeather());
+
             switch (report.getWeather()){
                 case DailyWeatherReport.WEATHER_TYPE_SUN:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.sunny));
@@ -143,7 +149,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                             JSONArray list = response.getJSONArray("list");
 
-                            for (int x = 0; x < 5; x++){
+                            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+                            DateTime currentDateTime = null;
+                            for (int x = 0; x < list.length(); x++){
                                 JSONObject obj = list.getJSONObject(x);
                                 JSONObject main = obj.getJSONObject("main");
                                 Double currentTemp = main.getDouble("temp");
@@ -155,9 +163,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 String weatherType = weather.getString("main");
 
                                 String rawDate = obj.getString("dt_txt");
+                                DateTime tempDate = fmt.parseDateTime(rawDate);
+                                
+                                if (currentDateTime == null){
+                                    currentDateTime = tempDate;
+                                    DailyWeatherReport report = new DailyWeatherReport(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
+                                    weatherReportList.add(report);
+                                }
 
-                                DailyWeatherReport report = new DailyWeatherReport(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
-                                weatherReportList.add(report);
+                                if (tempDate.toLocalDate().isAfter(currentDateTime.toLocalDate()))
+                                {
+                                    currentDateTime = tempDate;
+                                    DailyWeatherReport report = new DailyWeatherReport(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
+                                    weatherReportList.add(report);
+                                }
                             }
                         } catch (JSONException exception){
 
