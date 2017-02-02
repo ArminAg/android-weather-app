@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            Log.i("VOLLEY", "Response: " + response.toString());
                             JSONObject city = response.getJSONObject("city");
                             String cityName = city.getString("name");
                             String country = city.getString("country");
