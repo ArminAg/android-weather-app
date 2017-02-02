@@ -34,15 +34,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import solutions.hedron.android_weather_app.adapter.WeatherReportAdapter;
 import solutions.hedron.android_weather_app.model.DailyWeatherReport;
-import solutions.hedron.android_weather_app.service.DataService;
-import solutions.hedron.android_weather_app.service.WeatherApi;
+import solutions.hedron.android_weather_app.model.WeatherReportHeader;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
@@ -63,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private TextView weatherDescription;
 
     private ArrayList<DailyWeatherReport> weatherReportList = new ArrayList<>();
+    private WeatherReportHeader weatherReportHeader;
     private WeatherReportAdapter adapter;
 
     public static MainActivity getMainActivity() {
@@ -103,15 +100,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void updateUI(){
-        if (weatherReportList.size() > 0 ){
-            DailyWeatherReport report = weatherReportList.get(0);
-            todayDate.setText(report.getFormattedDate());
-            currentTemp.setText(Integer.toString(report.getCurrentTemp()) + "°");
-            lowTemp.setText(Integer.toString(report.getMinTemp()) + "°");
-            cityCountry.setText(report.getCityName() + ", " + report.getCountry());
-            weatherDescription.setText(report.getWeather());
+            todayDate.setText(weatherReportHeader.getFormattedDate());
+            currentTemp.setText(Integer.toString(weatherReportHeader.getCurrentTemp()) + "°");
+            lowTemp.setText(Integer.toString(weatherReportHeader.getMinTemp()) + "°");
+            cityCountry.setText(weatherReportHeader.getCityName() + ", " + weatherReportHeader.getCountry());
+            weatherDescription.setText(weatherReportHeader.getWeather());
 
-            switch (report.getWeather()){
+            switch (weatherReportHeader.getWeather()){
                 case DailyWeatherReport.WEATHER_TYPE_SUN:
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.sunny));
                     break;
@@ -131,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.thunder_lightning));
                     break;
             }
-        }
     }
 
     public void downloadWeatherData(Location location){
@@ -164,17 +158,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                                 String rawDate = obj.getString("dt_txt");
                                 DateTime tempDate = fmt.parseDateTime(rawDate);
-                                
+
                                 if (currentDateTime == null){
                                     currentDateTime = tempDate;
-                                    DailyWeatherReport report = new DailyWeatherReport(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
-                                    weatherReportList.add(report);
+                                    weatherReportHeader = new WeatherReportHeader(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
                                 }
 
                                 if (tempDate.toLocalDate().isAfter(currentDateTime.toLocalDate()))
                                 {
                                     currentDateTime = tempDate;
-                                    DailyWeatherReport report = new DailyWeatherReport(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
+                                    DailyWeatherReport report = new DailyWeatherReport(currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
                                     weatherReportList.add(report);
                                 }
                             }

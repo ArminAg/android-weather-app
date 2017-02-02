@@ -17,22 +17,11 @@ public class DailyWeatherReport {
     public static final String WEATHER_TYPE_SNOW = "Snow";
     public static final String WEATHER_TYPE_THUNDER = "Thunderstorm";
 
-    private String cityName;
-    private String country;
     private int currentTemp;
     private int maxTemp;
     private int minTemp;
     private String formattedDate;
     private String weatherType;
-
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public String getCountry() {
-        return country;
-    }
 
     public int getCurrentTemp() {
         return currentTemp;
@@ -54,9 +43,7 @@ public class DailyWeatherReport {
         return weatherType;
     }
 
-    public DailyWeatherReport(String cityName, String country, int currentTemp, int maxTemp, int minTemp, String rawDate, String weatherType) {
-        this.cityName = cityName;
-        this.country = country;
+    public DailyWeatherReport(int currentTemp, int maxTemp, int minTemp, String rawDate, String weatherType) {
         this.currentTemp = currentTemp;
         this.maxTemp = maxTemp;
         this.minTemp = minTemp;
@@ -64,7 +51,7 @@ public class DailyWeatherReport {
         this.weatherType = weatherType;
     }
 
-    private String formatRawDate(String rawDate){
+    protected String formatRawDate(String rawDate){
         SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String result = "";
         try {
