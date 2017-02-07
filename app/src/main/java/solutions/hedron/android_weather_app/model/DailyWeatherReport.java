@@ -47,7 +47,7 @@ public class DailyWeatherReport {
         return weatherType;
     }
 
-    public DailyWeatherReport(int currentTemp, int maxTemp, int minTemp, String rawDate, String weatherType) {
+    public DailyWeatherReport(int currentTemp, int maxTemp, int minTemp, Date rawDate, String weatherType) {
         this.currentTemp = currentTemp;
         this.maxTemp = maxTemp;
         this.minTemp = minTemp;
@@ -55,9 +55,8 @@ public class DailyWeatherReport {
         this.weatherType = weatherType;
     }
 
-    protected String formatRawDate(String rawDate){
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        DateTime formattedDate = fmt.parseDateTime(rawDate);
+    protected String formatRawDate(Date rawDate){
+        DateTime formattedDate = new DateTime(rawDate);
         return formattedDate.dayOfWeek().getAsText() + ", " + formattedDate.monthOfYear().getAsShortText() + " " + formattedDate.dayOfMonth().get();
     }
 }
