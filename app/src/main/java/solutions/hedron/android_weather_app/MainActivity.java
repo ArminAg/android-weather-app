@@ -128,63 +128,65 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
     }
 
+    private final Response.Listener<JSONObject> onWeatherDataLoaded = new Response.Listener<JSONObject>(){
+        @Override
+        public void onResponse(JSONObject response){
+            try {
+                Log.i("VOLLEY", "Response: " + response.toString());
+                JSONObject city = response.getJSONObject("city");
+                String cityName = city.getString("name");
+                String country = city.getString("country");
+
+                JSONArray list = response.getJSONArray("list");
+
+                DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+                DateTime currentDateTime = null;
+                for (int x = 0; x < list.length(); x++){
+                    JSONObject obj = list.getJSONObject(x);
+                    JSONObject main = obj.getJSONObject("main");
+                    Double currentTemp = main.getDouble("temp");
+                    Double maxTemp = main.getDouble("temp_max");
+                    Double minTemp = main.getDouble("temp_min");
+
+                    JSONArray weatherArr = obj.getJSONArray("weather");
+                    JSONObject weather = weatherArr.getJSONObject(0);
+                    String weatherType = weather.getString("main");
+
+                    String rawDate = obj.getString("dt_txt");
+                    DateTime tempDate = fmt.parseDateTime(rawDate);
+
+                    if (currentDateTime == null){
+                        currentDateTime = tempDate;
+                        weatherReportHeader = new WeatherReportHeader(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
+                    }
+
+                    if (tempDate.toLocalDate().isAfter(currentDateTime.toLocalDate()))
+                    {
+                        currentDateTime = tempDate;
+                        DailyWeatherReport report = new DailyWeatherReport(currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
+                        weatherReportList.add(report);
+                    }
+                }
+            } catch (JSONException exception){
+
+            }
+            updateUI();
+            adapter.notifyDataSetChanged();
+        }
+    };
+
+    private final Response.ErrorListener onWeatherError = new Response.ErrorListener(){
+        @Override
+        public void onErrorResponse(VolleyError error){
+            Log.e("VOLLEY", "Error: " + error.getLocalizedMessage());
+        }
+    };
+
     public void downloadWeatherData(Location location){
         final String fullcoords = URL_COORD + location.getLatitude() + "&lon=" + location.getLongitude();
         final String url = URL_BASE + fullcoords + URL_UNITS + URL_API_KEY;
 
-        final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>(){
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Log.i("VOLLEY", "Response: " + response.toString());
-                            JSONObject city = response.getJSONObject("city");
-                            String cityName = city.getString("name");
-                            String country = city.getString("country");
-
-                            JSONArray list = response.getJSONArray("list");
-
-                            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-                            DateTime currentDateTime = null;
-                            for (int x = 0; x < list.length(); x++){
-                                JSONObject obj = list.getJSONObject(x);
-                                JSONObject main = obj.getJSONObject("main");
-                                Double currentTemp = main.getDouble("temp");
-                                Double maxTemp = main.getDouble("temp_max");
-                                Double minTemp = main.getDouble("temp_min");
-
-                                JSONArray weatherArr = obj.getJSONArray("weather");
-                                JSONObject weather = weatherArr.getJSONObject(0);
-                                String weatherType = weather.getString("main");
-
-                                String rawDate = obj.getString("dt_txt");
-                                DateTime tempDate = fmt.parseDateTime(rawDate);
-
-                                if (currentDateTime == null){
-                                    currentDateTime = tempDate;
-                                    weatherReportHeader = new WeatherReportHeader(cityName, country, currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
-                                }
-
-                                if (tempDate.toLocalDate().isAfter(currentDateTime.toLocalDate()))
-                                {
-                                    currentDateTime = tempDate;
-                                    DailyWeatherReport report = new DailyWeatherReport(currentTemp.intValue(),maxTemp.intValue(), minTemp.intValue(), rawDate, weatherType);
-                                    weatherReportList.add(report);
-                                }
-                            }
-                        } catch (JSONException exception){
-
-                        }
-                        updateUI();
-                        adapter.notifyDataSetChanged();
-                    }
-                }, new Response.ErrorListener(){
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Error: " + error.getLocalizedMessage());
-            }
-        });
-
+        final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, onWeatherDataLoaded, onWeatherError);
         Volley.newRequestQueue(this).add(jsonRequest);
     }
 
