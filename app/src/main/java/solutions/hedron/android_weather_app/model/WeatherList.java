@@ -2,6 +2,8 @@ package solutions.hedron.android_weather_app.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.joda.time.DateTime;
+
 import java.util.Date;
 import java.util.List;
 
@@ -16,4 +18,9 @@ public class WeatherList{
     public Main main;
 
     public List<Weather> weather;
+
+    public String getFormattedDate(){
+        DateTime formattedDate = new DateTime(this.date);
+        return formattedDate.dayOfWeek().getAsText() + ", " + formattedDate.monthOfYear().getAsShortText() + " " + formattedDate.dayOfMonth().get();
+    }
 }
