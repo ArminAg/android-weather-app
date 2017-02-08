@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="solutions.hedron.android_weather_app.MainActivity"
+    tools:context="solutions.hedron.android_weather_app.activities.MainActivity"
     android:background="#499EEC">
 
     <LinearLayout

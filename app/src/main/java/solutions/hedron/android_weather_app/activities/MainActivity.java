@@ -1,4 +1,4 @@
-package solutions.hedron.android_weather_app;
+package solutions.hedron.android_weather_app.activities;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -34,6 +34,7 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 
+import solutions.hedron.android_weather_app.R;
 import solutions.hedron.android_weather_app.adapter.WeatherReportAdapter;
 import solutions.hedron.android_weather_app.model.Weather;
 import solutions.hedron.android_weather_app.model.WeatherList;
@@ -149,25 +150,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private final Response.Listener<String> onWeatherReportLoaded = new Response.Listener<String>(){
         @Override
         public void onResponse(String response){
-            weatherModel = gson.fromJson(response, WeatherModel.class);
-            DateTime currentDateTime = null;
-            for (WeatherList item : weatherModel.list){
-                DateTime tempDate = new DateTime(item.date);
-
-                if (currentDateTime == null){
-                    currentDateTime = tempDate;
-                }
-
-                if (tempDate.toLocalDate().isAfter(currentDateTime.toLocalDate()))
-                {
-                    currentDateTime = tempDate;
-                    weatherList.add(item);
-                }
-            }
+            processResponse(response);
             updateUI();
             adapter.notifyDataSetChanged();
         }
     };
+
+    private void processResponse(String response) {
+        weatherModel = gson.fromJson(response, WeatherModel.class);
+        DateTime currentDateTime = null;
+        for (WeatherList item : weatherModel.list){
+            DateTime tempDate = new DateTime(item.date);
+
+            if (currentDateTime == null){
+                currentDateTime = tempDate;
+            }
+
+            if (tempDate.toLocalDate().isAfter(currentDateTime.toLocalDate()))
+            {
+                currentDateTime = tempDate;
+                weatherList.add(item);
+            }
+        }
+    }
 
     private final Response.ErrorListener onWeatherReportError = new Response.ErrorListener(){
         @Override

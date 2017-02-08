@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import solutions.hedron.android_weather_app.MainActivity;
+import solutions.hedron.android_weather_app.activities.MainActivity;
 import solutions.hedron.android_weather_app.R;
 import solutions.hedron.android_weather_app.model.Weather;
 import solutions.hedron.android_weather_app.model.WeatherList;
