@@ -20,7 +20,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
@@ -32,21 +31,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import solutions.hedron.android_weather_app.adapter.WeatherReportAdapter;
-import solutions.hedron.android_weather_app.model.DailyWeatherReport;
+import solutions.hedron.android_weather_app.model.Weather;
 import solutions.hedron.android_weather_app.model.WeatherList;
 import solutions.hedron.android_weather_app.model.WeatherModel;
-import solutions.hedron.android_weather_app.model.WeatherReportHeader;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
@@ -55,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static MainActivity mainActivity;
 
     final String URL_BASE = "http://api.openweathermap.org/data/2.5/forecast";
-    final String URL_COORD = "/?lat=";//9.991354&lon=76.287129";
+    final String URL_COORD = "/?lat=";
     final String URL_UNITS = "&units=metric";
     final String URL_API_KEY = "&APPID=YOUR_API_KEY_HERE";
 
@@ -66,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private TextView cityCountry;
     private TextView weatherDescription;
 
-    private ArrayList<DailyWeatherReport> weatherReportList = new ArrayList<>();
-    private WeatherReportHeader weatherReportHeader;
+    private ArrayList<WeatherList> weatherList = new ArrayList<>();
+    private WeatherModel weatherModel;
     private WeatherReportAdapter adapter;
 
     private RequestQueue requestQueue;
@@ -102,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         this.weatherDescription = (TextView)findViewById(R.id.weatherDescription);
 
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.content_daily_weather);
-        adapter = new WeatherReportAdapter(weatherReportList);
+        adapter = new WeatherReportAdapter(weatherList);
         recyclerView.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -117,33 +108,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void updateUI(){
-            todayDate.setText(weatherReportHeader.getFormattedDate());
-            currentTemp.setText(Integer.toString(weatherReportHeader.getCurrentTemp()) + "°");
-            lowTemp.setText(Integer.toString(weatherReportHeader.getMinTemp()) + "°");
-            cityCountry.setText(weatherReportHeader.getCityName() + ", " + weatherReportHeader.getCountry());
-            weatherDescription.setText(weatherReportHeader.getWeather());
+        WeatherList weatherItem = weatherModel.list.get(0);
+        todayDate.setText(weatherItem.getFormattedDate());
+        currentTemp.setText(Integer.toString(weatherItem.main.temp.intValue()) + "°");
+        lowTemp.setText(Integer.toString(weatherItem.main.minTemp.intValue()) + "°");
+        cityCountry.setText(weatherModel.city.cityName + ", " + weatherModel.city.country);
+        weatherDescription.setText(weatherItem.weather.get(0).weatherType);
 
-            switch (weatherReportHeader.getWeather()){
-                case DailyWeatherReport.WEATHER_TYPE_SUN:
-                    this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.sunny));
-                    break;
-                case DailyWeatherReport.WEATHER_TYPE_CLOUDS:
-                    this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.cloudy));
-                    break;
-                case DailyWeatherReport.WEATHER_TYPE_PARTIAL_CLOUDS:
-                    this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.partially_cloudy));
-                    break;
-                case DailyWeatherReport.WEATHER_TYPE_RAIN:
-                    this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.rainy));
-                    break;
-                case DailyWeatherReport.WEATHER_TYPE_SNOW:
-                    this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.snow));
-                    break;
-                case DailyWeatherReport.WEATHER_TYPE_THUNDER:
-                    this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.thunder_lightning));
-                    break;
-            }
+        switch (weatherItem.weather.get(0).weatherType){
+            case Weather.WEATHER_TYPE_SUN:
+                this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.sunny));
+                break;
+            case Weather.WEATHER_TYPE_CLOUDS:
+                this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.cloudy));
+                break;
+            case Weather.WEATHER_TYPE_PARTIAL_CLOUDS:
+                this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.partially_cloudy));
+                break;
+            case Weather.WEATHER_TYPE_RAIN:
+                this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.rainy));
+                break;
+            case Weather.WEATHER_TYPE_SNOW:
+                this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.snow));
+                break;
+            case Weather.WEATHER_TYPE_THUNDER:
+                this.weatherIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.getMainActivity().getApplicationContext(), R.drawable.thunder_lightning));
+                break;
+        }
     }
+
 
     public void downloadWeatherData(Location location){
         final String fullcoords = URL_COORD + location.getLatitude() + "&lon=" + location.getLongitude();
@@ -156,28 +149,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private final Response.Listener<String> onWeatherReportLoaded = new Response.Listener<String>(){
         @Override
         public void onResponse(String response){
-            // Test
-            WeatherModel weatherModel = gson.fromJson(response, WeatherModel.class);
-            //Log.i("API_TESTING", weatherModel.city.cityName + ", " + weatherModel.city.country);
-
+            weatherModel = gson.fromJson(response, WeatherModel.class);
             DateTime currentDateTime = null;
             for (WeatherList item : weatherModel.list){
-                //Log.i("API_TESTING", item.date + ", " + item.main.temp.intValue()  + ", " + item.main.minTemp  + ", " + item.main.maxTemp + ", " + item.weather.get(0).weatherType);
-
                 DateTime tempDate = new DateTime(item.date);
 
                 if (currentDateTime == null){
                     currentDateTime = tempDate;
-                    weatherReportHeader = new WeatherReportHeader(weatherModel.city.cityName, weatherModel.city.country, item.main.temp.intValue(), item.main.maxTemp.intValue(),item.main.minTemp.intValue()
-                            , item.date, item.weather.get(0).weatherType);
                 }
 
                 if (tempDate.toLocalDate().isAfter(currentDateTime.toLocalDate()))
                 {
                     currentDateTime = tempDate;
-                    DailyWeatherReport report = new DailyWeatherReport(item.main.temp.intValue(), item.main.maxTemp.intValue(),item.main.minTemp.intValue()
-                            , item.date, item.weather.get(0).weatherType);
-                    weatherReportList.add(report);
+                    weatherList.add(item);
                 }
             }
             updateUI();
@@ -188,8 +172,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private final Response.ErrorListener onWeatherReportError = new Response.ErrorListener(){
         @Override
         public void onErrorResponse(VolleyError error){
-            // TEst
-            Log.e("MainActivity", error.toString());
+            Log.e("VOLLEY_ERROR", error.toString());
         }
     };
 

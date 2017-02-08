@@ -9,22 +9,22 @@ import java.util.ArrayList;
 
 import solutions.hedron.android_weather_app.R;
 import solutions.hedron.android_weather_app.holder.WeatherReportViewHolder;
-import solutions.hedron.android_weather_app.model.DailyWeatherReport;
+import solutions.hedron.android_weather_app.model.WeatherList;
 
 /**
  * Created by armin on 31/01/2017.
  */
 
 public class WeatherReportAdapter extends RecyclerView.Adapter<WeatherReportViewHolder> {
-    private ArrayList<DailyWeatherReport> weatherReports;
+    private ArrayList<WeatherList> weatherReports;
 
-    public WeatherReportAdapter(ArrayList<DailyWeatherReport> weatherReports) {
+    public WeatherReportAdapter(ArrayList<WeatherList> weatherReports) {
         this.weatherReports = weatherReports;
     }
 
     @Override
     public void onBindViewHolder(WeatherReportViewHolder holder, int position) {
-        DailyWeatherReport report = weatherReports.get(position);
+        WeatherList report = weatherReports.get(position);
         holder.updateUI(report);
     }
 
