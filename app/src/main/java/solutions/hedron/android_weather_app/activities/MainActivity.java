@@ -1,5 +1,6 @@
 package solutions.hedron.android_weather_app.activities;
 
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.Manifest;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private ImageView weatherIcon;
     private TextView cityCountry;
     private TextView weatherDescription;
+
+    private ProgressDialog progressDialog;
 
     private ArrayList<WeatherList> weatherList = new ArrayList<>();
     private WeatherModel weatherModel;
@@ -138,6 +141,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
+    private void showProgress(){
+        progressDialog = new ProgressDialog(getMainActivity());
+        progressDialog.setMessage("Downloading data");
+        progressDialog.show();
+    }
 
     public void downloadWeatherData(Location location){
         final String fullcoords = URL_COORD + location.getLatitude() + "&lon=" + location.getLongitude();
@@ -145,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         StringRequest request = new StringRequest(Request.Method.GET, url, onWeatherReportLoaded, onWeatherReportError);
         requestQueue.add(request);
+
+        showProgress();
     }
 
     private final Response.Listener<String> onWeatherReportLoaded = new Response.Listener<String>(){
@@ -153,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             processResponse(response);
             updateUI();
             adapter.notifyDataSetChanged();
+            progressDialog.dismiss();
         }
     };
 
@@ -177,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private final Response.ErrorListener onWeatherReportError = new Response.ErrorListener(){
         @Override
         public void onErrorResponse(VolleyError error){
-            Log.e("VOLLEY_ERROR", error.toString());
+            Toast.makeText(getMainActivity(), "Couldn't download data, try again later.", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
         }
     };
 
